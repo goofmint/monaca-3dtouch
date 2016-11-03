@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <script src="components/loader.js"></script>
+    <link rel="stylesheet" href="components/loader.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <h1>3D Touch</h1>
+  <div id="deviceready" class="blink">
+    <button onclick="avail()">avail?</button><br/><br/>
+    <button onclick="watchForceTouches()">ForceTouchの監視</button><br/><br/>
+    <button onclick="enableLinkPreview()">リンクプレビューを有効にする</button><br/><br/>
+    <button onclick="disableLinkPreview()">リンクプレビューを無効にする</button><br/><br/>
+    <button onclick="configureQuickActions()">ホームアイコンの設定</button><br/><br/>
+    <a href="https://monaca.io/">Monacaへのリンク</a><br/><br/>
+  </div>
+</div>
+<script>
+  function avail() {
+    ThreeDeeTouch.isAvailable(function(avail) {alert("avail? " + avail)});
+  }
+          function watchForceTouches() {
+            ThreeDeeTouch.watchForceTouches(function(result) {
+              console.log("force touch % " + result.force); // 84
+              console.log("force touch timestamp " + result.timestamp); // 1449908744.706419
+              console.log("force touch x coordinate " + result.x); // 213
+              console.log("force touch y coordinate " + result.y); // 41
+            });
+          }
+  function enableLinkPreview() {
+    ThreeDeeTouch.enableLinkPreview();
+  }
+  function disableLinkPreview() {
+    ThreeDeeTouch.disableLinkPreview();
+  }
+  function configureQuickActions() {
+    ThreeDeeTouch.configureQuickActions([
+      {
+        type: 'checkin', // optional, but can be used in the onHomeIconPressed callback
+        title: 'チェックイン', // mandatory
+        subtitle: '素早くチェックイン', // optional
+        iconType: 'compose' // optional
+      },
+      {
+        type: 'share',
+        title: '共有',
+        subtitle: 'みんなと共有しましょう',
+        iconType: 'Share' // optional, case insensitive
+      },
+      {
+        type: 'search',
+        title: '検索',
+        iconType: 'Search' // iconType is case insensitive
+      },
+      {
+        title: 'お気に入り表示',
+        iconTemplate: 'HeartTemplate' // from Assets catalog, note that there's also an iconType 'Love'
+      }
+    ]);
+  }
+  // TODO should be in generic spot (index.js) so it will always be triggered, even on warm start from a page deep down in the app
+  document.addEventListener('deviceready', function() {
+    ThreeDeeTouch.onHomeIconPressed = function(payload) {
+      console.log("Icon pressed. Type: " + payload.type + ". Title: " + payload.title + ".");
+      if (payload.type == 'checkin') {
+        document.location = 'checkin.html';
+      } else if (payload.type == 'share') {
+        document.location = 'share.html';
+      } else {
+        // wrapping in a timeout, otherwise it collides with the splashscreen
+        setTimeout(function() {
+          alert(JSON.stringify(payload));
+        }, 500);
+      }
+    }
+  }, false);
+</script></body>
+</html>
