@@ -21,63 +21,66 @@
   </div>
 </div>
 <script>
-  function avail() {
-    ThreeDeeTouch.isAvailable(function(avail) {alert("avail? " + avail)});
-  }
-          function watchForceTouches() {
-            ThreeDeeTouch.watchForceTouches(function(result) {
-              console.log("force touch % " + result.force); // 84
-              console.log("force touch timestamp " + result.timestamp); // 1449908744.706419
-              console.log("force touch x coordinate " + result.x); // 213
-              console.log("force touch y coordinate " + result.y); // 41
-            });
-          }
-  function enableLinkPreview() {
-    ThreeDeeTouch.enableLinkPreview();
-  }
-  function disableLinkPreview() {
-    ThreeDeeTouch.disableLinkPreview();
-  }
-  function configureQuickActions() {
-    ThreeDeeTouch.configureQuickActions([
-      {
-        type: 'checkin', // optional, but can be used in the onHomeIconPressed callback
-        title: 'チェックイン', // mandatory
-        subtitle: '素早くチェックイン', // optional
-        iconType: 'compose' // optional
-      },
-      {
-        type: 'share',
-        title: '共有',
-        subtitle: 'みんなと共有しましょう',
-        iconType: 'Share' // optional, case insensitive
-      },
-      {
-        type: 'search',
-        title: '検索',
-        iconType: 'Search' // iconType is case insensitive
-      },
-      {
-        title: 'お気に入り表示',
-        iconTemplate: 'HeartTemplate' // from Assets catalog, note that there's also an iconType 'Love'
-      }
-    ]);
-  }
-  // TODO should be in generic spot (index.js) so it will always be triggered, even on warm start from a page deep down in the app
-  document.addEventListener('deviceready', function() {
-    ThreeDeeTouch.onHomeIconPressed = function(payload) {
-      console.log("Icon pressed. Type: " + payload.type + ". Title: " + payload.title + ".");
-      if (payload.type == 'checkin') {
-        document.location = 'checkin.html';
-      } else if (payload.type == 'share') {
-        document.location = 'share.html';
-      } else {
-        // wrapping in a timeout, otherwise it collides with the splashscreen
-        setTimeout(function() {
-          alert(JSON.stringify(payload));
-        }, 500);
-      }
+    // 3D Touchに対応しているかどうかのチェック
+    function avail() {
+        ThreeDeeTouch.isAvailable(function(avail) {alert("avail? " + avail)});
     }
-  }, false);
-</script></body>
+    
+    // 3D Touchイベントの監視
+    function watchForceTouches() {
+        ThreeDeeTouch.watchForceTouches(function(result) {
+            console.log("force touch % " + result.force);
+            console.log("force touch timestamp " + result.timestamp);
+            console.log("force touch x coordinate " + result.x);
+            console.log("force touch y coordinate " + result.y);
+        });
+    }
+    
+    // リンクプレビューを有効にする
+    function enableLinkPreview() {
+        ThreeDeeTouch.enableLinkPreview();
+    }
+    
+    // リンクプレビューを無効にする
+    function disableLinkPreview() {
+        ThreeDeeTouch.disableLinkPreview();
+    }
+    
+    // クイックアクションの設定
+    function configureQuickActions() {
+        ThreeDeeTouch.configureQuickActions([
+            {
+                type: 'checkin', // 種別（システム用）
+                title: 'チェックイン', // タイトル
+                subtitle: '素早くチェックイン', // 説明
+                iconType: 'compose' // アイコン
+            },
+            {
+                type: 'share',
+                title: '共有',
+                subtitle: 'みんなと共有しましょう',
+                iconType: 'Share'
+            },
+            {
+                type: 'search',
+                title: '検索',
+                iconType: 'Search'
+            },
+            {
+                type: 'favorite',
+                title: 'お気に入り表示'
+            }
+        ]);
+    }
+    
+    // アプリ起動時の処理
+    document.addEventListener('deviceready', function() {
+        ThreeDeeTouch.onHomeIconPressed = function(payload) {
+            setTimeout(function() {
+                alert("Type: " + payload.type + ". Title: " + payload.title + ".");
+            }, 500);
+        }
+    }, false);
+</script>    
+</body>
 </html>
